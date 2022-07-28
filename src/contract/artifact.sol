@@ -29,92 +29,98 @@ interface IERC20Token {
     );
 }
  
- contract  ArtifactHouse {
+contract  ArtifactHouse {
      
     uint internal artifactsLength = 0;
-    address internal cUsdTokenAddress =     0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
 
     struct  Artifact {
-        address payable owner;
-        string image;
-        string name;
-        string description;
-         uint price;
-         
-      
+      address payable owner;
+      string image;
+      string name;
+      string description;
+      uint price;     
+      bool forSale;  
     }
 
-       mapping (uint =>  Artifact) internal artifacts;
+    mapping (uint =>  Artifact) internal artifacts;
 
-       
-     function addArtifact (
+    modifier onlyOwner(uint _index){
+      require(msg.sender == artifacts[_index].owner, "Only the owner can access this funciton" );
+      _;
+    }
+
+    function addArtifact (
         string memory _image,
         string memory _name,
         string memory _description,
         uint _price
-
-          ) public {
+        ) public {
        Artifact storage artifactt = artifacts[artifactsLength];
 
         artifactt.owner = payable(msg.sender);
-           artifactt.image = _image;
-            artifactt.name = _name;
-            artifactt.description = _description;
-           artifactt.price = _price;
+        artifactt.image = _image;
+        artifactt.name = _name;
+        artifactt.description = _description;
+        artifactt.price = _price;
+        artifactt.forSale = true;
 
-          
         artifactsLength++;
-          }
+    }
 
                 
-      function buyArtifact(uint _index) public payable  {
-        require(
-          IERC20Token(cUsdTokenAddress).transferFrom(
-            msg.sender,
-            artifacts[_index].owner,
-            artifacts[_index].price
-          ),
-          "Transfer failed."
-        );
+    function buyArtifact(uint _index) public payable  {
+      require(
+        IERC20Token(cUsdTokenAddress).transferFrom(
+          msg.sender,
+          artifacts[_index].owner,
+          artifacts[_index].price
+        ),
+        "Transfer failed."
+      );
 
-         artifacts[_index].owner = payable(msg.sender);
+      artifacts[_index].owner = payable(msg.sender);
          
     }
 
-  function getArtifact(uint _index) public view returns (
+    function getArtifact(uint _index) public view returns (
         address payable,
         string memory,  
         string memory,  
         string memory,
-        uint
-        
-      
+        uint,
+        bool
     ) {
 
       return (  
             artifacts[_index].owner,
             artifacts[_index].image,
-             artifacts[_index].name,
-             artifacts[_index].description,
-            artifacts[_index].price
-
-                          
+            artifacts[_index].name,
+            artifacts[_index].description,
+            artifacts[_index].price,
+            artifacts[_index].forSale
         );
     }
 
     
- function getartifactsLength() public view returns (uint) {
-        return (artifactsLength);
+    function getartifactsLength() public view returns (uint) {
+      return (artifactsLength);
+    }
+ 
+    function ReformArtifactImage(uint _index, string memory _image) public onlyOwner(_index){
+      require(msg.sender == artifacts[_index].owner, "Only creator can perform this operation");
+      artifacts[_index].image = _image;
     }
 
-    
-    function ReformArtifactImage(uint _index, string memory _image) public {
-        require(msg.sender == artifacts[_index].owner, "Only creator can perform this operation");
-        artifacts[_index].image = _image;
+    //Function using which the owner can change the price of the artifact
+    function changePrice(uint _index, uint _price) public onlyOwner(_index){
+      artifacts[_index].price = _price;
     }
 
-    
- }
-
+    //Function to set the artifact for sale or not for sale depending on the current state
+    function toggleForSale(uint _index) public onlyOwner(_index){
+      artifacts[_index].forSale = !artifacts[_index].forSale;
+    }
+}
 
     

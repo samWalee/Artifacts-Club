@@ -71,7 +71,7 @@ function App() {
  
        
    const getArtifact =  async () => {
-    const artifactsLength = await contract.methods.getartifactslength().call();
+    const artifactsLength = await contract.methods.getartifactsLength().call();
     console.log(artifactsLength);
     const _artifactt = []
     for (let index = 0; index < artifactsLength; index++) {
