@@ -16,15 +16,13 @@ body{
  
  
  .lk{
-   position: absolute;
+  
    padding-top: 100px;
  }
  .container{
   margin-top: 110px !important;
  }
  .zk{
-   position: absolute;
-   left: 20rem;
    padding-top: 50px;
    width: 70px;
  }
