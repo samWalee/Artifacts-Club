@@ -32,7 +32,7 @@ interface IERC20Token {
  contract  ArtifactHouse {
      
     uint internal artifactsLength = 0;
-    address internal cUsdTokenAddress =     0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    address internal cUsdTokenAddress =     0x686c626E48bfC5DC98a30a9992897766fed4Abd3;
 
     struct  Artifact {
         address payable owner;
@@ -40,11 +40,15 @@ interface IERC20Token {
         string name;
         string description;
          uint price;
-         
+          bool forSale; 
       
     }
 
        mapping (uint =>  Artifact) internal artifacts;
+        modifier onlyOwner(uint _index){
+      require(msg.sender == artifacts[_index].owner, "Only the owner can access this funciton" );
+      _;
+    }
 
        
      function addArtifact (
@@ -102,6 +106,16 @@ interface IERC20Token {
         );
     }
 
+ //Function using which the owner can change the price of the artifact
+    function changePrice(uint _index, uint _price) public onlyOwner(_index){
+      artifacts[_index].price = _price;
+    }
+
+    //Function to set the artifact for sale or not for sale depending on the current state
+    function toggleForSale(uint _index) public onlyOwner(_index){
+      artifacts[_index].forSale = !artifacts[_index].forSale;
+    
+}
     
  function getartifactsLength() public view returns (uint) {
         return (artifactsLength);
