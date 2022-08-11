@@ -13,7 +13,9 @@ body{
  .navbar{
    background-color: lightblue;
  }
- 
+ .container{
+  margin-top: 110px !important;
+ }
  
  .lk{
    position: absolute;
